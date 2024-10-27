@@ -9,33 +9,28 @@
       - wget
       - curl
       - gnupg
+      - lsb-release
+      - postgresql
+    state: present
+
+- name: Проверка существования пользователя postgres
+  command: id -u postgres
+  register: postgres_user_check
+  ignore_errors: yes
+
+- name: Создание пользователя postgres
+  user:
+    name: postgres
+    system: yes
+    shell: /bin/bash
+  when: postgres_user_check.rc != 0
+
+- name: Добавление ключа GPG для PostgreSQL
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
     state: present
 
 - name: Добавление репозитория PostgreSQL
   apt_repository:
-    repo: "deb http://apt.postgresql.org/pub/repos/apt/ bullseye-pgdg main"
-    state: present
-
-- name: Добавление ключа репозитория PostgreSQL
-  command: >
-    wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-
-- name: Обновление списка пакетов после добавления репозитория
-  apt:
-    update_cache: yes
-
-- name: Установка PostgreSQL
-  apt:
-    name: "postgresql-{{ postgresql_version }}"
-    state: present
-
-- name: Запуск службы PostgreSQL
-  service:
-    name: postgresql
-    state: started
-    enabled: yes
-
-- name: Установка PostgreSQL contrib
-  apt:
-    name: postgresql-contrib
+    repo: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main"
     state: present

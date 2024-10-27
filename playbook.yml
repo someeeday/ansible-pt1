@@ -1,6 +1,6 @@
 ---
-- name: Настройка сервера Debian 11 и установка PostgreSQL 16
-  hosts: db_servers
+- hosts: db_servers
   become: yes
-  roles:
-    - postgresql
+  tasks:
+    - include_tasks: roles/postgresql/tasks/install.yml
+    - include_tasks: roles/postgresql/tasks/configure.yml

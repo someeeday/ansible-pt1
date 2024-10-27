@@ -1,5 +1,0 @@
----
-- name: Удаление временных файлов (если нужно)
-  file:
-    path: /tmp/some_tmp_file
-    state: absent
