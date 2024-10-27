@@ -1,0 +1,41 @@
+---
+- name: Обновление списка пакетов
+  apt:
+    update_cache: yes
+
+- name: Установка необходимых пакетов
+  apt:
+    name:
+      - wget
+      - curl
+      - gnupg
+    state: present
+
+- name: Добавление репозитория PostgreSQL
+  apt_repository:
+    repo: "deb http://apt.postgresql.org/pub/repos/apt/ bullseye-pgdg main"
+    state: present
+
+- name: Добавление ключа репозитория PostgreSQL
+  command: >
+    wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+
+- name: Обновление списка пакетов после добавления репозитория
+  apt:
+    update_cache: yes
+
+- name: Установка PostgreSQL
+  apt:
+    name: "postgresql-{{ postgresql_version }}"
+    state: present
+
+- name: Запуск службы PostgreSQL
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Установка PostgreSQL contrib
+  apt:
+    name: postgresql-contrib
+    state: present

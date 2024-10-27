@@ -1,0 +1,6 @@
+---
+- name: Настройка сервера Debian 11 и установка PostgreSQL 16
+  hosts: db_servers
+  become: yes
+  roles:
+    - postgresql
